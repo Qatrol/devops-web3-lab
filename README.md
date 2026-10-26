@@ -14,3 +14,4 @@
 2. Скопируйте `.env.example` в `.env` и заполните секреты.
 3. Запустите `docker compose up -d`.
 4. Для крипто-приложения: `cd my-crypto-app/docker && docker compose up -d`.
+CI/CD работает!
