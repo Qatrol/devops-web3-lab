@@ -13,7 +13,6 @@ jobs:
           cd /home/qatrol/monitoring
           git fetch --all
           git reset --hard origin/main
-          git clean -fd
 
       - name: Restart monitoring stack
         run: |
