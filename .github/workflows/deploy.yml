@@ -1,0 +1,26 @@
+name: Deploy Homelab Infrastructure
+
+on:
+  push:
+    branches: [ main ]
+
+jobs:
+  deploy:
+    runs-on: self-hosted
+    steps:
+      - name: Pull latest changes
+        run: |
+          cd /home/qatrol/monitoring
+          git fetch --all
+          git reset --hard origin/main
+          git clean -fd
+
+      - name: Restart monitoring stack
+        run: |
+          cd /home/qatrol/monitoring
+          docker compose up -d --remove-orphans
+
+      - name: Restart crypto app stack
+        run: |
+          cd /home/qatrol/monitoring/my-crypto-app/docker
+          docker compose up -d --remove-orphans
