@@ -1,0 +1,50 @@
+import { memo, useState } from "react";
+import { useWatchBalance } from "@my-crypto-app/hooks";
+import { formatEther } from "viem";
+import type { Address } from "viem";
+import { useMounted } from "./useMounted";
+
+export type BalanceProps = {
+  address?: Address;
+  className?: string;
+  usdMode?: boolean;
+};
+
+/**
+ * Displays wallet balance with optional USD conversion
+ */
+export const Balance = memo(function Balance({ address, className = "", usdMode = false }: BalanceProps) {
+  const mounted = useMounted();
+  const [showUsd, setShowUsd] = useState(usdMode);
+  const { data: balance, isLoading, isError } = useWatchBalance(address);
+
+  if (!mounted || isLoading) {
+    return <div className={`animate-pulse bg-gray-200 h-6 w-24 rounded ${className}`} />;
+  }
+
+  if (isError || !balance) {
+    return <div className={`text-red-500 ${className}`}>Error loading balance</div>;
+  }
+
+  const formattedBalance = parseFloat(formatEther(balance.value)).toFixed(4);
+
+  // TODO: Integrate with price feed for USD conversion
+  const usdValue = showUsd ? (parseFloat(formattedBalance) * 2000).toFixed(2) : null;
+
+  return (
+    <div className={`flex items-center gap-2 ${className}`}>
+      <button
+        onClick={() => setShowUsd(!showUsd)}
+        className="font-mono font-medium hover:text-blue-500 transition-colors"
+      >
+        {showUsd && usdValue ? (
+          <span>${usdValue}</span>
+        ) : (
+          <span>
+            {formattedBalance} {balance.symbol}
+          </span>
+        )}
+      </button>
+    </div>
+  );
+});

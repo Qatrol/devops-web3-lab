@@ -1,0 +1,112 @@
+version: '3'
+
+tasks:
+  unit:
+    desc: Run unit tests (core + sdk)
+    dir: '{{.ROOT_DIR}}'
+    cmds:
+      - bun test packages/core packages/sdk
+
+  watch:
+    desc: Run tests in watch mode
+    dir: '{{.ROOT_DIR}}'
+    cmds:
+      - bun test --watch packages/core packages/sdk
+
+  coverage:
+    desc: Run tests with coverage
+    dir: '{{.ROOT_DIR}}'
+    cmds:
+      - bun test --coverage
+
+  contracts:
+    desc: Run contract tests only
+    cmds:
+      - task: contracts:test
+
+  api:
+    desc: Run API tests
+    dir: '{{.ROOT_DIR}}/apps/api'
+    cmds:
+      - bun test
+
+  sdk:
+    desc: Run SDK tests
+    dir: '{{.ROOT_DIR}}/packages/sdk'
+    cmds:
+      - bun test
+
+  core:
+    desc: Run core tests
+    dir: '{{.ROOT_DIR}}/packages/core'
+    cmds:
+      - bun test
+
+  e2e:
+    desc: Run end-to-end tests for web app
+    dir: '{{.ROOT_DIR}}'
+    cmds:
+      - turbo run test:e2e
+
+  e2e:ui:
+    desc: Run end-to-end tests in UI mode
+    dir: '{{.ROOT_DIR}}/apps/web'
+    cmds:
+      - bun run test:e2e:ui
+
+  e2e:complete:
+    desc: Run complete E2E test suite (all layers - requires dev server running)
+    dir: '{{.ROOT_DIR}}/apps/web'
+    cmds:
+      - echo "Running complete E2E test suite..."
+      - echo "Note - Make sure dev server is running (task dev:up)"
+      - bunx playwright test e2e/complete-test-suite.spec.ts --config=playwright.screenshots.config.ts
+      - echo ""
+      - echo "View results - bunx playwright show-report"
+
+  e2e:visual:
+    desc: Run visual regression tests only
+    dir: '{{.ROOT_DIR}}/apps/web'
+    cmds:
+      - bunx playwright test e2e/visual-regression.spec.ts --config=playwright.screenshots.config.ts
+
+  e2e:accessibility:
+    desc: Run accessibility tests (WCAG 2.1 AA)
+    dir: '{{.ROOT_DIR}}/apps/web'
+    cmds:
+      - bunx playwright test e2e/accessibility.spec.ts --config=playwright.screenshots.config.ts
+
+  e2e:performance:
+    desc: Run performance tests
+    dir: '{{.ROOT_DIR}}/apps/web'
+    cmds:
+      - bunx playwright test e2e/performance.spec.ts --config=playwright.screenshots.config.ts
+
+  e2e:responsive:
+    desc: Run responsive design tests
+    dir: '{{.ROOT_DIR}}/apps/web'
+    cmds:
+      - bunx playwright test e2e/responsive.spec.ts --config=playwright.screenshots.config.ts
+
+  e2e:screenshots:
+    desc: Generate UI screenshots for documentation
+    dir: '{{.ROOT_DIR}}/apps/web'
+    cmds:
+      - echo "Generating screenshots..."
+      - bunx playwright test e2e/visual-regression.spec.ts --config=playwright.screenshots.config.ts
+      - echo ""
+      - echo "Screenshots saved to docs/screenshots/"
+
+  e2e:template:
+    desc: Run template creation e2e tests
+    dir: '{{.ROOT_DIR}}'
+    cmds:
+      - bun test tests/e2e/*.test.ts
+
+  all:
+    desc: Run all tests (unit + contracts + web e2e + template e2e)
+    cmds:
+      - task: unit
+      - task: contracts
+      - task: e2e
+      - task: e2e:template

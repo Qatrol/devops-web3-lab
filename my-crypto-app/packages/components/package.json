@@ -1,0 +1,59 @@
+{
+  "name": "@my-crypto-app/components",
+  "version": "0.3.0",
+  "description": "Reusable Web3 UI components for Bun-Eth",
+  "sideEffects": false,
+  "main": "./dist/index.js",
+  "module": "./dist/index.mjs",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": {
+      "bun": "./src/index.ts",
+      "import": {
+        "types": "./dist/index.d.ts",
+        "default": "./dist/index.mjs"
+      },
+      "require": {
+        "types": "./dist/index.d.ts",
+        "default": "./dist/index.js"
+      }
+    }
+  },
+  "files": [
+    "dist",
+    "src"
+  ],
+  "scripts": {
+    "build": "tsup",
+    "dev": "tsup --watch",
+    "test": "bun test",
+    "prepublishOnly": "bun run build"
+  },
+  "dependencies": {
+    "@my-crypto-app/burner-connector": "^0.3.0",
+    "@my-crypto-app/core": "^0.3.0",
+    "@my-crypto-app/hooks": "^0.3.0",
+    "clsx": "^2.1.0",
+    "tailwind-merge": "^2.2.0",
+    "viem": "^2.7.8",
+    "wagmi": "^2.16.4"
+  },
+  "peerDependencies": {
+    "react": "^18.2.0 || ^19.0.0",
+    "react-dom": "^18.2.0 || ^19.0.0"
+  },
+  "devDependencies": {
+    "@types/react": "^19.0.0",
+    "@types/react-dom": "^19.0.0",
+    "tsup": "^8.5.1",
+    "typescript": "^5.6.2"
+  },
+  "keywords": [
+    "ethereum",
+    "components",
+    "web3",
+    "react",
+    "ui"
+  ],
+  "license": "MIT"
+}

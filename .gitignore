@@ -1,0 +1,33 @@
+# Зависимости
+node_modules/
+**/node_modules/
+
+# Сборки
+.next/
+**/.next/
+dist/
+**/dist/
+
+# Секреты и переменные окружения
+.env
+.env.*
+**/.env
+**/.env.*
+!**/.env.example
+
+# Логи и временные файлы
+*.log
+*.pid
+.DS_Store
+Thumbs.db
+
+# Данные баз данных и докера
+data/
+**/data/
+pgdata/
+**/postgres-data/
+
+# Кэш и локальные настройки
+.cache/
+.vscode/
+.idea/

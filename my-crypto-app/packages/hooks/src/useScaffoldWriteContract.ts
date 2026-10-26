@@ -1,0 +1,78 @@
+import { useState } from "react";
+import { useWriteContract, useWaitForTransactionReceipt } from "wagmi";
+import type { TransactionReceipt } from "viem";
+import { useDeployedContractInfo } from "./useDeployedContractInfo";
+import { useTransactor } from "./useTransactor";
+import type { ContractName } from "./types";
+
+export interface UseScaffoldWriteContractResult {
+  writeContractAsync: (
+    functionName: string,
+    args?: readonly unknown[],
+    value?: bigint
+  ) => Promise<`0x${string}` | undefined>;
+  isMining: boolean;
+  txReceipt: TransactionReceipt | undefined;
+  txHash: `0x${string}` | undefined;
+  isPending: boolean;
+  isSuccess: boolean;
+  isError: boolean;
+  error: Error | null;
+  reset: () => void;
+}
+
+/**
+ * Wrapper around wagmi's useWriteContract with integrated transaction notifications
+ * @param contractName - name of the contract to interact with
+ * @returns write contract functions with mining state tracking
+ */
+export function useScaffoldWriteContract(contractName: ContractName): UseScaffoldWriteContractResult {
+  const [isMining, setIsMining] = useState(false);
+  const deployedContractInfo = useDeployedContractInfo(contractName);
+  const { writeContractAsync, data: txHash, ...writeContractProps } = useWriteContract();
+  const transactor = useTransactor();
+
+  const { data: txReceipt } = useWaitForTransactionReceipt({
+    hash: txHash,
+  });
+
+  const writeContractAsyncWithNotifications = async (
+    functionName: string,
+    args?: readonly unknown[],
+    value?: bigint
+  ) => {
+    if (!deployedContractInfo) {
+      throw new Error("Contract not deployed");
+    }
+
+    setIsMining(true);
+
+    try {
+      const tx = await transactor(() =>
+        writeContractAsync({
+          address: deployedContractInfo.address,
+          abi: deployedContractInfo.abi,
+          functionName,
+          args,
+          value,
+        } as any)
+      );
+
+      return tx;
+    } finally {
+      setIsMining(false);
+    }
+  };
+
+  return {
+    writeContractAsync: writeContractAsyncWithNotifications,
+    isMining,
+    txReceipt,
+    txHash,
+    isPending: writeContractProps.isPending,
+    isSuccess: writeContractProps.isSuccess,
+    isError: writeContractProps.isError,
+    error: writeContractProps.error,
+    reset: writeContractProps.reset,
+  };
+}

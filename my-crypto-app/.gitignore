@@ -1,0 +1,53 @@
+# Bun
+node_modules/
+.bun/
+
+# Next.js
+.next/
+out/
+
+# Build outputs
+dist/
+build/
+*.js
+*.d.ts
+!hardhat.config.ts
+
+# Hardhat
+cache/
+artifacts/
+typechain-types/
+
+# Environment
+.env
+.env.local
+.env.*.local
+
+# IDEs
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Logs
+logs/
+*.log
+npm-debug.log*
+
+# Docker
+.dockerignore
+
+# Testing
+coverage/
+test-results/
+playwright-report/
+playwright/.cache/
+
+# Misc
+*.tsbuildinfo
+.task/

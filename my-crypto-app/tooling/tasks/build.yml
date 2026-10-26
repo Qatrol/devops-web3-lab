@@ -1,0 +1,34 @@
+version: '3'
+
+tasks:
+  packages:
+    desc: Build all packages (libraries only, no apps)
+    dir: '{{.ROOT_DIR}}'
+    env:
+      NODE_ENV: production
+    cmds:
+      - turbo run build --filter='./packages/*'
+
+  web:
+    desc: Build Next.js web app for deployment
+    dir: '{{.ROOT_DIR}}'
+    env:
+      NODE_ENV: production
+    cmds:
+      - turbo run build --filter='@bun-eth/web'
+
+  all:
+    desc: Build everything (packages + web app)
+    dir: '{{.ROOT_DIR}}'
+    env:
+      NODE_ENV: production
+    cmds:
+      - turbo run build
+
+  lint:
+    desc: Lint all packages (TypeScript + Solidity)
+    dir: '{{.ROOT_DIR}}'
+    cmds:
+      - turbo run lint
+      - sherif
+      - task: contracts:lint

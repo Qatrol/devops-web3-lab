@@ -1,0 +1,23 @@
+import type { NextConfig } from "next";
+import { withBunDocker } from "next-bun-docker";
+
+const nextConfig: NextConfig = {
+  allowedDevOrigins: ["192.168.1.103"],
+  transpilePackages: [
+    "@my-crypto-app/contracts",
+    "@my-crypto-app/components",
+    "@my-crypto-app/hooks",
+    "@my-crypto-app/core",
+    "@my-crypto-app/burner-connector",
+  ],
+  webpack: (config) => {
+    // Base Account connector не используется: отключаем его тяжёлые зависимости
+    config.resolve.alias = {
+      ...config.resolve.alias,
+      "@base-org/account": false,
+    };
+    return config;
+  },
+};
+
+export default withBunDocker(nextConfig);

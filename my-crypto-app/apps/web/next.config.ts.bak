@@ -1,0 +1,60 @@
+import type { NextConfig } from "next";
+import { withBunDocker } from 'next-bun-docker';
+import { createVanillaExtractPlugin } from '@vanilla-extract/next-plugin';
+import path from "path";
+
+const withVanillaExtract = createVanillaExtractPlugin();
+
+const nextConfig: NextConfig = {
+  allowedDevOrigins: ['192.168.1.103'],
+  transpilePackages: [
+    "@my-crypto-app/contracts",
+    "@my-crypto-app/components",
+    "@my-crypto-app/hooks",
+    "@my-crypto-app/core",
+    "@my-crypto-app/burner-connector",
+    "@rainbow-me/rainbowkit",
+    "@vanilla-extract/sprinkles",
+    "@vanilla-extract/css",
+    "@tanstack/react-query",
+    "@tanstack/query-core",
+    "@base-org/account",
+    "@coinbase/wallet-sdk",
+    "@metamask/connect-evm",
+    "@safe-global/safe-apps-provider",
+    "@safe-global/safe-apps-sdk",
+    "@walletconnect/ethereum-provider",
+    "@noble/hashes",
+    "viem",
+    "wagmi",
+    "zustand",
+    "eventemitter3",
+    "@scure/bip39",
+    "@scure/bip32"
+  ],
+  webpack: (config) => {
+    config.resolve.symlinks = false;
+    config.resolve.alias = {
+      ...config.resolve.alias,
+      "viem": path.resolve('/app/node_modules/viem'),
+      "wagmi": path.resolve('/app/node_modules/wagmi'),
+      "@scure/bip39": path.resolve('/app/node_modules/@scure/bip39'),
+      "@scure/bip32": path.resolve('/app/node_modules/@scure/bip32'),
+      "@tanstack/react-query": path.resolve('/app/node_modules/@tanstack/react-query'),
+      "@tanstack/query-core": path.resolve('/app/node_modules/@tanstack/query-core'),
+      "@base-org/account": path.resolve('/app/node_modules/@base-org/account'),
+      "@coinbase/wallet-sdk": path.resolve('/app/node_modules/@coinbase/wallet-sdk'),
+      "@metamask/connect-evm": path.resolve('/app/node_modules/@metamask/connect-evm'),
+      "@safe-global/safe-apps-provider": path.resolve('/app/node_modules/@safe-global/safe-apps-provider'),
+      "@safe-global/safe-apps-sdk": path.resolve('/app/node_modules/@safe-global/safe-apps-sdk'),
+      "@walletconnect/ethereum-provider": path.resolve('/app/node_modules/@walletconnect/ethereum-provider'),
+      "@noble/hashes": path.resolve('/app/node_modules/@noble/hashes'),
+      "zustand": path.resolve('/app/node_modules/zustand'),
+      "eventemitter3": path.resolve('/app/node_modules/eventemitter3')
+    };
+    return config;
+  }
+};
+
+// Сначала применяем фиксы для Docker, затем — плагин vanilla-extract
+export default withVanillaExtract(withBunDocker(nextConfig));

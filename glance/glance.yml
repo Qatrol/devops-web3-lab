@@ -1,0 +1,32 @@
+pages:
+  - name: Home
+    columns:
+      - size: small
+        widgets:
+          - type: calendar
+            first-day-of-week: monday
+      - size: full
+        widgets:
+          - type: clock
+            hour-format: 24h
+          - type: search
+          - type: bookmarks
+            groups:
+              - name: Инфраструктура
+                links:
+                  - title: Gitea
+                    url: http://192.168.1.103:3002
+                  - title: Arcane
+                    url: http://192.168.1.103:3552
+                  - title: Grafana
+                    url: http://192.168.1.103:3000
+                  - title: Prometheus
+                    url: http://192.168.1.103:9090
+                  - title: Dozzle
+                    url: http://192.168.1.103:9999
+              - name: Приложения
+                links:
+                  - title: Web3 Кошелек
+                    url: http://192.168.1.103:3005
+                  - title: Code-Server
+                    url: http://192.168.1.103:8443
