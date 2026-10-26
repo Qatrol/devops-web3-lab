@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <title>Faucet - Получи монеты</title>
+    <style>
+        body { font-family: 'Segoe UI', sans-serif; background-color: #1e1e2e; color: #cdd6f4; display: flex; justify-content: center; align-items: center; min-height: 100vh; margin: 0; }
+        .container { background-color: #313244; padding: 30px; border-radius: 12px; text-align: center; width: 400px; box-shadow: 0 8px 24px rgba(0,0,0,0.5); }
+        h2 { color: #a6e3a1; margin-top: 0; }
+        input { width: 100%; padding: 10px; margin: 15px 0; box-sizing: border-box; background-color: #1e1e2e; border: 1px solid #45475a; color: #cdd6f4; border-radius: 6px; font-family: monospace; }
+        button { width: 100%; padding: 12px; background-color: #a6e3a1; color: #1e1e2e; border: none; border-radius: 6px; font-weight: bold; cursor: pointer; font-size: 16px; }
+        button:hover { background-color: #94e2d5; }
+        .result { margin-top: 15px; padding: 10px; border-radius: 6px; background: #1e1e2e; display: none; }
+        a { display: block; margin-top: 20px; color: #89b4fa; text-decoration: none; }
+    </style>
+</head>
+<body>
+<div class="container">
+    <h2>🚰 Faucet (Кран)</h2>
+    <p>Введи адрес кошелька, чтобы получить 50 тестовых монет.</p>
+    <input type="text" id="address" placeholder="0x...">
+    <button onclick="getCoins()">Получить монеты</button>
+    <div id="result" class="result"></div>
+    <a href="/">← Вернуться в кошелек</a>
+</div>
+<script>
+    async function getCoins() {
+        const address = document.getElementById('address').value;
+        const result = document.getElementById('result');
+        if (!address) {
+            result.style.display = 'block';
+            result.style.color = '#f38ba8';
+            result.innerText = 'Введи адрес!';
+            return;
+        }
+        try {
+            const res = await fetch('/faucet', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ address })
+            });
+            const data = await res.json();
+            result.style.display = 'block';
+            if (res.ok) {
+                result.style.color = '#a6e3a1';
+                result.innerText = `✅ Успех! ${data.message}`;
+            } else {
+                result.style.color = '#f38ba8';
+                result.innerText = `❌ ${data.error}`;
+            }
+        } catch (e) {
+            result.innerText = 'Ошибка сети';
+        }
+    }
+</script>
+</body>
+</html>

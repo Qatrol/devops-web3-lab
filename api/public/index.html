@@ -1,0 +1,276 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Trust Wallet Clone</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        :root { --blue: #007AFF; --green: #00D632; --bg: #050505; --card: rgba(255, 255, 255, 0.05); --border: rgba(255, 255, 255, 0.1); --text: #FFFFFF; --muted: #888888; }
+        * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Inter', sans-serif; }
+        body { background: var(--bg); color: var(--text); display: flex; justify-content: center; align-items: center; min-height: 100vh; padding: 20px; background-image: radial-gradient(circle at top right, rgba(0, 122, 255, 0.15), transparent 40%), radial-gradient(circle at bottom left, rgba(0, 214, 50, 0.1), transparent 40%); }
+        
+        .app { width: 100%; max-width: 420px; background: rgba(15, 15, 15, 0.8); backdrop-filter: blur(20px); border: 1px solid var(--border); border-radius: 24px; padding: 24px; box-shadow: 0 20px 40px rgba(0,0,0,0.8); }
+        
+        /* Auth Screen */
+        .auth-screen { display: flex; flex-direction: column; gap: 16px; text-align: center; padding: 20px 0; }
+        .logo { width: 70px; height: 70px; background: linear-gradient(135deg, var(--blue), var(--green)); border-radius: 22px; margin: 0 auto 16px; display: flex; justify-content: center; align-items: center; font-size: 32px; box-shadow: 0 10px 20px rgba(0, 122, 255, 0.3); }
+        .auth-screen h2 { font-size: 26px; font-weight: 700; letter-spacing: -0.5px; }
+        .auth-screen p { color: var(--muted); font-size: 14px; margin-bottom: 10px; }
+        
+        input { width: 100%; padding: 16px; background: var(--card); border: 1px solid var(--border); border-radius: 14px; color: var(--text); font-size: 15px; transition: all 0.3s; outline: none; }
+        input:focus { border-color: var(--blue); background: rgba(0, 122, 255, 0.05); }
+        
+        button { width: 100%; padding: 16px; border-radius: 14px; border: none; font-size: 16px; font-weight: 600; cursor: pointer; transition: transform 0.1s, opacity 0.2s; }
+        button:active { transform: scale(0.98); }
+        .btn-blue { background: var(--blue); color: white; box-shadow: 0 4px 15px rgba(0, 122, 255, 0.3); }
+        .btn-outline { background: transparent; color: var(--blue); border: 1px solid var(--blue); }
+        
+        /* Dashboard */
+        .dashboard { display: none; flex-direction: column; gap: 24px; animation: fadeIn 0.4s ease; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+        
+        .header { display: flex; justify-content: space-between; align-items: center; }
+        .header h3 { font-size: 18px; font-weight: 600; }
+        .badge { background: var(--card); border: 1px solid var(--border); padding: 6px 12px; border-radius: 20px; font-size: 13px; color: var(--muted); }
+        
+        .balance-card { background: linear-gradient(135deg, rgba(255,255,255,0.05), rgba(255,255,255,0.01)); border: 1px solid var(--border); padding: 24px; border-radius: 20px; position: relative; overflow: hidden; }
+        .balance-card::before { content: ''; position: absolute; top: -50%; left: -50%; width: 200%; height: 200%; background: radial-gradient(circle, rgba(0,122,255,0.1) 0%, transparent 60%); pointer-events: none; }
+        .balance-label { color: var(--muted); font-size: 14px; margin-bottom: 8px; }
+        .balance-amount { font-size: 44px; font-weight: 700; letter-spacing: -1.5px; margin-bottom: 20px; }
+        .balance-amount span { font-size: 16px; color: var(--green); letter-spacing: 0; margin-left: 4px; }
+        
+        .copy-container { display: flex; align-items: center; background: rgba(0,0,0,0.5); border: 1px solid rgba(255,255,255,0.08); border-radius: 12px; padding: 12px 16px; cursor: pointer; transition: background 0.2s; }
+        .copy-container:hover { background: rgba(0,0,0,0.8); }
+        .address-text { font-family: 'Courier New', monospace; font-size: 14px; color: var(--blue); flex-grow: 1; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; user-select: all; /* Разрешаем выделение */ }
+        .icon { font-size: 18px; color: var(--muted); margin-left: 12px; }
+        
+        .actions { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 12px; }
+        .action-btn { background: var(--card); border: 1px solid var(--border); padding: 14px 10px; border-radius: 16px; color: var(--text); font-size: 13px; font-weight: 500; cursor: pointer; display: flex; flex-direction: column; align-items: center; gap: 8px; transition: background 0.2s; text-decoration: none; }
+        .action-btn:hover { background: rgba(255,255,255,0.1); }
+        .action-btn span { font-size: 20px; }
+        
+        .transfer-box { background: var(--card); border: 1px solid var(--border); padding: 20px; border-radius: 20px; }
+        .transfer-box h4 { margin-bottom: 16px; font-size: 16px; font-weight: 600; }
+        .transfer-box input { margin-bottom: 12px; }
+        
+        .history-box { margin-top: 10px; }
+        .history-title { font-size: 16px; font-weight: 600; margin-bottom: 12px; color: var(--muted); }
+        .tx-item { display: flex; justify-content: space-between; align-items: center; padding: 12px; border-bottom: 1px solid var(--border); font-size: 14px; }
+        .tx-item:last-child { border-bottom: none; }
+        .tx-amount { font-weight: 600; }
+        .tx-in { color: var(--green); }
+        .tx-out { color: #FF453A; }
+
+        /* Alerts & Toasts */
+        .alert { padding: 12px; border-radius: 10px; margin-top: 12px; display: none; font-size: 14px; text-align: center; }
+        .alert.error { background: rgba(255,69,58,0.1); color: #FF453A; border: 1px solid rgba(255,69,58,0.2); display: block; }
+        .alert.success { background: rgba(0,214,50,0.1); color: var(--green); border: 1px solid rgba(0,214,50,0.2); display: block; }
+        
+        .toast { position: fixed; bottom: 30px; left: 50%; transform: translateX(-50%) translateY(100px); background: var(--green); color: #000; padding: 12px 24px; border-radius: 30px; font-weight: 600; font-size: 14px; opacity: 0; transition: all 0.3s cubic-bezier(0.68, -0.55, 0.265, 1.55); z-index: 1000; box-shadow: 0 10px 20px rgba(0,214,50,0.3); }
+        .toast.show { transform: translateX(-50%) translateY(0); opacity: 1; }
+    </style>
+</head>
+<body>
+
+<div class="app">
+    <!-- AUTH -->
+    <div id="authScreen" class="auth-screen">
+        <div class="logo">🛡️</div>
+        <h2>SUPER Trust Wallet</h2>
+        <p>Безопасный крипто-кошелек</p>
+        <input type="text" id="authUser" placeholder="Логин">
+        <input type="password" id="authPass" placeholder="Пароль">
+        <button class="btn-blue" onclick="login()">Войти</button>
+        <button class="btn-outline" onclick="register()">Создать кошелек</button>
+        <div id="authAlert" class="alert"></div>
+    </div>
+
+    <!-- DASHBOARD -->
+    <div id="dashboardScreen" class="dashboard">
+        <div class="header">
+            <h3>Мой Кошелек</h3>
+            <div class="badge" id="userBadge">...</div>
+        </div>
+        
+        <div class="balance-card">
+            <div class="balance-label">Общий баланс</div>
+            <div class="balance-amount"><span id="balanceValue">0.00</span> <span>COINS</span></div>
+            
+            <div class="copy-container" onclick="copyAddress()">
+                <div class="address-text" id="walletAddress">0x...</div>
+                <div class="icon">📋</div>
+            </div>
+            <div id="copyHint" style="font-size: 11px; color: var(--muted); margin-top: 8px; text-align: center;">Нажми, чтобы выделить и скопировать</div>
+        </div>
+
+        <div class="actions">
+            <a href="/faucet.html" class="action-btn"><span>🚰</span> Кран</a>
+            <div class="action-btn" onclick="refreshData()"><span>🔄</span> Обновить</div>
+            <div class="action-btn" onclick="logout()"><span>🚪</span> Выйти</div>
+        </div>
+
+        <div class="transfer-box">
+            <h4>Перевести монеты</h4>
+            <input type="text" id="toAddress" placeholder="Адрес получателя (0x...)">
+            <input type="number" id="amount" placeholder="Сумма">
+            <button class="btn-blue" onclick="transfer()">Отправить</button>
+            <div id="transferAlert" class="alert"></div>
+        </div>
+
+        <!-- ИСТОРИЯ -->
+        <div class="history-box">
+            <div class="history-title">Последние операции</div>
+            <div id="txList"></div>
+        </div>
+    </div>
+</div>
+
+<div id="toast" class="toast">Готово!</div>
+
+<script>
+    let currentUser = localStorage.getItem('crypto_user');
+    let currentAddress = localStorage.getItem('crypto_address');
+
+    window.onload = () => { if (currentUser && currentAddress) showDashboard(); };
+
+    function showAlert(id, msg, type = 'error') {
+        const el = document.getElementById(id);
+        el.innerText = msg; el.className = `alert ${type}`;
+        setTimeout(() => { el.className = 'alert'; }, 4000);
+    }
+
+    function toast(msg) {
+        const t = document.getElementById('toast');
+        t.innerText = msg; t.classList.add('show');
+        setTimeout(() => t.classList.remove('show'), 2500);
+    }
+
+    // ПУЛЕНЕПРОБИВАЕМОЕ КОПИРОВАНИЕ
+    function copyAddress() {
+        if (!currentAddress) return;
+        
+        // 1. Выделяем текст программно
+        const range = document.createRange();
+        const selection = window.getSelection();
+        const addressEl = document.getElementById('walletAddress');
+        range.selectNodeContents(addressEl);
+        selection.removeAllRanges();
+        selection.addRange(range);
+
+        // 2. Пытаемся скопировать современным методом
+        if (navigator.clipboard && window.isSecureContext) {
+            navigator.clipboard.writeText(currentAddress).then(() => {
+                toast('Адрес скопирован!');
+            }).catch(() => {
+                toast('Текст выделен. Нажми Ctrl+C');
+            });
+        } else {
+            // 3. Фоллбэк для HTTP
+            try {
+                const successful = document.execCommand('copy');
+                if (successful) toast('Адрес скопирован!');
+                else toast('Текст выделен. Нажми Ctrl+C');
+            } catch (err) {
+                toast('Текст выделен. Нажми Ctrl+C');
+            }
+        }
+    }
+
+    async function register() {
+        const u = document.getElementById('authUser').value;
+        const p = document.getElementById('authPass').value;
+        if(!u || !p) return showAlert('authAlert', 'Заполни поля');
+        try {
+            let res = await fetch('/register', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ username: u, password: p }) });
+            if (!res.ok) return showAlert('authAlert', (await res.json()).error);
+            res = await fetch('/generate-wallet', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ username: u }) });
+            const data = await res.json();
+            if (res.ok) {
+                currentUser = u; currentAddress = data.address;
+                localStorage.setItem('crypto_user', u); localStorage.setItem('crypto_address', data.address);
+                showDashboard();
+            } else showAlert('authAlert', data.error);
+        } catch (e) { showAlert('authAlert', 'Ошибка сети'); }
+    }
+
+    async function login() {
+        const u = document.getElementById('authUser').value;
+        const p = document.getElementById('authPass').value;
+        if(!u || !p) return showAlert('authAlert', 'Заполни поля');
+        try {
+            const res = await fetch(`/wallet-address/${u}`);
+            const data = await res.json();
+            if (res.ok) {
+                currentUser = u; currentAddress = data.address;
+                localStorage.setItem('crypto_user', u); localStorage.setItem('crypto_address', data.address);
+                showDashboard();
+            } else showAlert('authAlert', 'Пользователь не найден');
+        } catch (e) { showAlert('authAlert', 'Ошибка сети'); }
+    }
+
+    function logout() {
+        localStorage.clear(); currentUser = null; currentAddress = null;
+        document.getElementById('dashboardScreen').style.display = 'none';
+        document.getElementById('authScreen').style.display = 'flex';
+    }
+
+    function showDashboard() {
+        document.getElementById('authScreen').style.display = 'none';
+        document.getElementById('dashboardScreen').style.display = 'flex';
+        document.getElementById('userBadge').innerText = currentUser;
+        document.getElementById('walletAddress').innerText = currentAddress;
+        refreshData();
+    }
+
+    async function refreshData() {
+        if(!currentAddress) return;
+        try {
+            let res = await fetch(`/wallet/${currentAddress}`);
+            if (res.ok) {
+                const data = await res.json();
+                document.getElementById('balanceValue').innerText = parseFloat(data.balance).toFixed(2);
+            }
+            res = await fetch(`/transactions/${currentAddress}`);
+            if (res.ok) {
+                const txs = await res.json();
+                const list = document.getElementById('txList');
+                list.innerHTML = '';
+                if (txs.length === 0) {
+                    list.innerHTML = '<div style="color:var(--muted); font-size:13px; text-align:center; padding:10px;">Нет операций</div>';
+                } else {
+                    txs.forEach(tx => {
+                        const isSender = tx.sender_address === currentAddress;
+                        const sign = isSender ? '-' : '+';
+                        const cls = isSender ? 'tx-out' : 'tx-in';
+                        const addr = isSender ? tx.receiver_address : tx.sender_address;
+                        list.innerHTML += `
+                            <div class="tx-item">
+                                <div>${isSender ? 'Отправлено' : 'Получено'}<br><span style="font-size:11px; color:var(--muted)">${addr.substring(0,10)}...</span></div>
+                                <div class="tx-amount ${cls}">${sign}${parseFloat(tx.amount).toFixed(2)}</div>
+                            </div>
+                        `;
+                    });
+                }
+            }
+        } catch(e) {}
+    }
+
+    async function transfer() {
+        const to = document.getElementById('toAddress').value;
+        const amt = document.getElementById('amount').value;
+        if(!to || !amt) return showAlert('transferAlert', 'Заполни поля');
+        try {
+            const res = await fetch('/transfer', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ fromAddress: currentAddress, toAddress: to, amount: parseFloat(amt) }) });
+            const data = await res.json();
+            if (res.ok) {
+                showAlert('transferAlert', data.message, 'success');
+                document.getElementById('toAddress').value = '';
+                document.getElementById('amount').value = '';
+                refreshData();
+            } else showAlert('transferAlert', data.error);
+        } catch (e) { showAlert('transferAlert', 'Ошибка сети'); }
+    }
+</script>
+</body>
+</html>
